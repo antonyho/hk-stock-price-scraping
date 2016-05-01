@@ -16,6 +16,6 @@ This tool is written in [Go](https://golang.org/).
 
 ##### Build:
 ```
-github.com/antonyho/hk-stock-price-scraping
+go get github.com/antonyho/hk-stock-price-scraping
 go build -o saver github.com/antonyho/hk-stock-price-scraping
 ```
