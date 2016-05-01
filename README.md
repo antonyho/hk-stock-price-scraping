@@ -6,15 +6,15 @@ This tool scraps opening and closing stock prices for all Hong Kong HSI listed c
 There are 3 tables in the database: "daily", "weekly", "monthly". There store stock prices in different time intervals respectively.
 
 
-- Technical information -
+#### Technical information
 
 This tool is written in [Go](https://golang.org/).
 
-Dependencies:
+##### Dependencies:
 
 - [go-sqlite3](https://github.com/mattn/go-sqlite3)
 
-Build:
+##### Build:
 ```
 github.com/antonyho/hk-stock-price-scraping
 go build -o saver github.com/antonyho/hk-stock-price-scraping
