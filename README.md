@@ -16,6 +16,13 @@ This tool is written in [Go](https://golang.org/).
 
 ##### Build:
 ```
-github.com/antonyho/hk-stock-price-scraping
+go get github.com/antonyho/hk-stock-price-scraping
+```
+On Linux/Mac OS X:
+```
 go build -o saver github.com/antonyho/hk-stock-price-scraping
+```
+On Windows:
+```
+go build -o saver.exe github.com/antonyho/hk-stock-price-scraping
 ```
