@@ -1,12 +1,10 @@
 package main
 
 import (
-    "bufio"
     "encoding/csv"
     "fmt"
     "log"
     "net/http"
-    "os"
     "time"
     db "github.com/antonyho/hk-stock-price-scraping/db"
 )
@@ -63,10 +61,6 @@ func main() {
     
     fmt.Println()
     fmt.Printf("Done (Elapsed Time: %v)\n", time.Since(startTime))
-    fmt.Printf("Press [Enter] to quit.")
-    
-    inputReader := bufio.NewReader(os.Stdin)
-    inputReader.ReadByte()
 }
 
 func getStockPrices(stockNo int, url string, startYear int, endYear int, endMonth int, endDay int) ([][]string) {
