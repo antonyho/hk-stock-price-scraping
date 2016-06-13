@@ -1,10 +1,12 @@
 package main
 
 import (
+    "bufio"
     "encoding/csv"
     "fmt"
     "log"
     "net/http"
+    "os"
     "time"
     db "github.com/antonyho/hk-stock-price-scraping/db"
 )
@@ -12,21 +14,22 @@ import (
 func main() {
     db := db.DefaultDBTool()
     
-    dailyStockPriceURL := "http://real-chart.finance.yahoo.com/table.csv?s=%04d.HK&a=0&b=4&c=%04d&d=4&e=%d&f=%04d&g=d&ignore=.csv"
-    weeklyStockPriceURL := "http://real-chart.finance.yahoo.com/table.csv?s=%04d.HK&a=00&b=4&c=%04d&d=04&e=%d&f=%04d&g=w&ignore=.csv"
-    monthlyStockPriceURL := "http://real-chart.finance.yahoo.com/table.csv?s=%04d.HK&a=00&b=4&c=%04d&d=04&e=%d&f=%04d&g=m&ignore=.csv"
+    dailyStockPriceURL := "http://real-chart.finance.yahoo.com/table.csv?s=%04d.HK&a=0&b=4&c=%04d&d=%d&e=%d&f=%04d&g=d&ignore=.csv"
+    weeklyStockPriceURL := "http://real-chart.finance.yahoo.com/table.csv?s=%04d.HK&a=00&b=4&c=%04d&d=%d&e=%d&f=%04d&g=w&ignore=.csv"
+    monthlyStockPriceURL := "http://real-chart.finance.yahoo.com/table.csv?s=%04d.HK&a=00&b=4&c=%04d&d=%d&e=%d&f=%04d&g=m&ignore=.csv"
     
     spinner := []byte{'-', '\\', '|', '/'}
     
     fmt.Println()
     startTime := time.Now()
     currentYear := startTime.Year()
+    currentMonth := int(startTime.Month())
     currentDay := startTime.Day()
     for stockNo := 1; stockNo <= 9999; stockNo++ {
         fmt.Printf("\r%cWorking Stock:%5d", spinner[stockNo % 4], stockNo)
         
         // Get daily stock price
-        dailyStockPrices := getStockPrices(stockNo, dailyStockPriceURL, 2000, currentYear, currentDay)
+        dailyStockPrices := getStockPrices(stockNo, dailyStockPriceURL, 2000, currentYear, currentMonth, currentDay)
         if dailyStockPrices == nil {
             continue
         }
@@ -36,7 +39,7 @@ func main() {
         db.Add("daily", stockNo, dailyStockPrices[1:])
         
         // Get weekly stock price
-        monthlyStockPrices := getStockPrices(stockNo, weeklyStockPriceURL, 2000, currentYear, currentDay)
+        monthlyStockPrices := getStockPrices(stockNo, weeklyStockPriceURL, 2000, currentYear, currentMonth, currentDay)
         if monthlyStockPrices == nil {
             continue
         }
@@ -46,7 +49,7 @@ func main() {
         db.Add("weekly", stockNo, monthlyStockPrices[1:])
         
         // Get monthly stock price
-        yearlyStockPrices := getStockPrices(stockNo, monthlyStockPriceURL, 2000, currentYear, currentDay)
+        yearlyStockPrices := getStockPrices(stockNo, monthlyStockPriceURL, 2000, currentYear, currentMonth, currentDay)
         if yearlyStockPrices == nil {
             continue
         }
@@ -60,10 +63,14 @@ func main() {
     
     fmt.Println()
     fmt.Printf("Done (Elapsed Time: %v)\n", time.Since(startTime))
+    fmt.Printf("Press [Enter] to quit.")
+    
+    inputReader := bufio.NewReader(os.Stdin)
+    inputReader.ReadByte()
 }
 
-func getStockPrices(stockNo int, url string, startYear int, endYear int, endDay int) ([][]string) {
-    stockPriceResp, err := http.Get(fmt.Sprintf(url, stockNo, startYear, endDay, endYear))
+func getStockPrices(stockNo int, url string, startYear int, endYear int, endMonth int, endDay int) ([][]string) {
+    stockPriceResp, err := http.Get(fmt.Sprintf(url, stockNo, startYear, endMonth, endDay, endYear))
     if (err != nil) || (stockPriceResp.StatusCode != 200) {
         if err != nil {
             log.Println(err)
